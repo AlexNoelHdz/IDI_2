@@ -18,9 +18,10 @@ def newton_raphson(ejercicio):
             break
 
         x_n_new = x_n - (ec_ev/ec_der_ev)
-        x_n_new = Float(x_n_new,cifras_sig)
-        # print(f"x_n: {x_n} x_n_new: {x_n_new}")
+        print(f"x_n: {x_n} x_n_new: {x_n_new}")
         if (x_n_new == x_n) or (iterations > 100):
+            x_n_new = Float(x_n_new,cifras_sig)
+            ec_ev = ec.evalf(subs={x:x_n})
             exactitud = abs(0-ec_ev)
             if(exactitud<E):
                 print(f"Solucion para {ec}: {x_n_new}")
@@ -30,12 +31,8 @@ def newton_raphson(ejercicio):
             else:
                 print(f"Exactitud:{exactitud} no cumple con el criterio establecido (menor que {E})")
                 break
-        else:
-            iterations+=1
-            x_n = x_n_new
-
-
-
+        iterations+=1
+        x_n = x_n_new
 
 x = sp.Symbol("x")
 E = 10**-4 # Error
