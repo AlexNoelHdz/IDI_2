@@ -1,45 +1,53 @@
 import sympy as sp
-from sympy import *
+from sympy.abc import x, y, z
+from sympy import Float, cos,sin, ln, exp, Matrix, diff
 
 class Ejercicio:
-    def __init__(self, ec, x_n, cifras_sig, E ):
-        self.ec = ec
+    def __init__(self, fn, x_n, cifras_sig, E ):
+        self.fn = fn
         self.x_n = x_n
         self.cifras_sig = cifras_sig
         self.E = E
+        self.variables = list(fn.atoms(sp.Symbol))
 
     def newton_raphson(self):
-        ec, x_n, cifras_sig, E  = self.ec, self.x_n, self.cifras_sig, self.E
+        fn, x_n, cifras_sig, E  = self.fn, self.x_n, self.cifras_sig, self.E
         # Derivada de la ec
-        ec_der = diff(ec)
+        ec_der = diff(fn)
         iterations = 1
 
         print("================================================")
         while True:
             # Evaluar ambas expresiones con el nuevo valor de x_n
-            ec_ev, ec_der_ev = ec.evalf(subs={x:x_n}) , ec_der.evalf(subs={x:x_n})
+            subs_dic = Ejercicio.get_subs_dic(self.variables, [x_n])
+            fn_ev, fn_der_ev = fn.evalf(subs=subs_dic) , ec_der.evalf(subs=subs_dic)
 
-            if (ec_der_ev == 0):
+            if (fn_der_ev == 0):
                 print("La derivada es 0, se indetermina la division")
                 break
-            x_n_new = x_n - (ec_ev/ec_der_ev)
+            x_n_new = x_n - (fn_ev/fn_der_ev)
             # print(f"x_n: {x_n} x_n_new: {x_n_new}")
             if (x_n_new == x_n) or (iterations > 100):
                 x_n_new = Float(x_n_new,cifras_sig)
-                ec_ev = ec.evalf(subs={x:x_n})
-                exactitud = abs(0-ec_ev)
+                fn_ev = fn.evalf(subs=subs_dic)
+                exactitud = abs(0-fn_ev)
                 if(exactitud<E):
-                    print(f"Solucion para {ec}: {x_n_new}")
+                    print(f"Solucion para {fn}: {x_n_new}")
                     print(f"Iteraciones: {iterations}")
                     print(f"La Exactitud:{exactitud} cumple con el criterio establecido (es menor que {E})")
                     break
                 else:
-                    print(f"{ec} tiene exactitud: {exactitud}, no cumple con el criterio establecido (menor que {E})")
+                    print(f"{fn} tiene exactitud: {exactitud}, no cumple con el criterio establecido (menor que {E})")
                     break
             iterations+=1
             x_n = x_n_new
 
-x = sp.Symbol("x")
+    @staticmethod
+    def get_subs_dic(variables, values):
+        subs_dic = {}
+        for i, variable in enumerate(variables):
+            subs_dic[variable] = values[i]
+        return subs_dic
 
 E = 10**-4 # Error
 # Definicion de las funciones
