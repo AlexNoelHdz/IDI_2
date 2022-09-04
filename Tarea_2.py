@@ -26,7 +26,7 @@ class Ejercicio:
             functions_ev = self.funciones.subs(subs_dic)
             norm_2 = sum(abs(functions_ev))
             cumple_exactitud = norm_2 < self.E
-            if(cumple_exactitud) or iteraciones > 90:
+            if(cumple_exactitud):
                     print(f"Solucion para {self.funciones}: {subs_dic}. Iteraciones: {iteraciones}")
                     print(f"La Norma 2: {norm_2} cumple con el criterio establecido (es menor que {self.E})")
                     break
@@ -35,6 +35,11 @@ class Ejercicio:
             # Newton-Raphson. Limitado a cifras significativas dadas.
             x_i = (x_i - (J_inv_eval * functions_ev)).evalf(self.cifras_sig)
             iteraciones+=1
+            # Forma alternativa de cortar el ciclo. Se alcanza cuando
+            # 1. Bug de Sympy desordena x,y,z... y rompe con los valores iniciales
+            # 2. No se ha llegado a la respuesta y x_i está creciendo y decreciendo. (No llegará)
+            if iteraciones > 90:
+                break
 
 f1 = [x**2+y-1, x-2*y**2]
 f2 = [x**2-10*x+y**2+5, x*y**2+x-10*y+8]
