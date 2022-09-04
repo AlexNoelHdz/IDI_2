@@ -27,8 +27,8 @@ class Ejercicio:
             norm_2 = sum(abs(functions_ev))
             cumple_exactitud = norm_2 < self.E
             if(cumple_exactitud):
-                    print(f"Solucion para {self.funciones}: {subs_dic}. Iteraciones: {iteraciones}")
-                    print(f"La Norma 2: {norm_2} cumple con el criterio establecido (es menor que {self.E})")
+                    print(f"Solucion para {self.funciones}:\n{subs_dic}. \nIteraciones: {iteraciones}")
+                    print(f"La Norma 2:{norm_2} cumple con el criterio establecido (es menor que {self.E})")
                     break
 
             J_inv_eval = J_inv.subs(subs_dic)
@@ -37,7 +37,7 @@ class Ejercicio:
             iteraciones+=1
             # Forma alternativa de cortar el ciclo. Se alcanza cuando
             # 1. Bug de Sympy desordena x,y,z... y rompe con los valores iniciales
-            # 2. No se ha llegado a la respuesta y x_i está creciendo y decreciendo. (No llegará)
+            # 2. No se ha llegado a la respuesta y x_i esta creciendo y decreciendo. (No llegara)
             if iteraciones > 90:
                 break
 
