@@ -19,6 +19,7 @@ class Ejercicio:
         print("================================================")
         while True:
             subs_dic = dict(zip(self.variables, x_i))
+            # subs_dic = {key:Float(value, self.cifras_sig) for (key,value) in subs_dic.items()}
             J_det_ev = J_det.subs(subs_dic)
             if (J_det_ev == 0):
                 print("El determinante del Jacobiano es 0, no s posible realizar operaciones")
@@ -30,20 +31,16 @@ class Ejercicio:
             x_i_new = x_i - (J_inv_eval * functions_ev)
 
             print(f"x_n: {x_i} x_n_new: {x_i_new}")
-            if (x_i_new == x_i):
-                result = {key:Float(value, self.cifras_sig) for (key,value) in subs_dic.items()}
-                functions_ev = self.funciones.subs(result)
-                norm_2 = sum(abs(functions_ev))
-                cumple_exactitud = norm_2 < self.E
-                if(cumple_exactitud) or (iterations > 101):
-                    print(f"Solucion para {self.funciones}: {result}")
+
+            norm_2 = sum(abs(functions_ev))
+            cumple_exactitud = norm_2 < self.E
+            if(cumple_exactitud):
+                    print(f"Solucion para {self.funciones}: {subs_dic}")
                     print(f"Iteraciones: {iterations}")
                     print(f"La Norma 2:{norm_2} cumple con el criterio establecido (es menor que {self.E})")
                     break
-                else:
-                    print(f"{self.funciones} tienen Norma 2: {norm_2}, no cumplen con el criterio establecido (menor que {self.E})")
-                    break
-            x_i = x_i_new
+            else:
+                x_i = x_i_new.evalf(self.cifras_sig)
             iterations+=1
 
 # Definicion de las funciones
