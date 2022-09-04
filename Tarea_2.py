@@ -1,7 +1,5 @@
-import sympy as sp
 from sympy.abc import x, y, z
-from sympy import Float, sin, ln, Matrix, Symbol
-import string
+from sympy import sin, ln, Matrix, Symbol
 
 class Ejercicio:
     def __init__(self, funciones, x_i_dic):
@@ -12,7 +10,7 @@ class Ejercicio:
         self.variables = list(self.funciones.atoms(Symbol))
 
     def newton_raphson(self):
-        iterations = 1
+        iteraciones = 1
         x_i = self.x_i
         J_inv = self.funciones.jacobian(self.variables).inv()
         J_det = self.funciones.jacobian(self.variables).det()
@@ -28,15 +26,15 @@ class Ejercicio:
             norm_2 = sum(abs(functions_ev))
             cumple_exactitud = norm_2 < self.E
             if(cumple_exactitud):
-                    print(f"Solucion para {self.funciones}: {subs_dic}. Iteraciones: {iterations}")
+                    print(f"Solucion para {self.funciones}: {subs_dic}. Iteraciones: {iteraciones}")
                     print(f"La Norma 2: {norm_2} cumple con el criterio establecido (es menor que {self.E})")
                     break
 
             J_inv_eval = J_inv.subs(subs_dic)
+            # Newton-Raphson. Limitado a cifras significativas dadas.
             x_i = (x_i - (J_inv_eval * functions_ev)).evalf(self.cifras_sig)
-            iterations+=1
+            iteraciones+=1
 
-# Definicion de las funciones
 f1 = [x**2+y-1, x-2*y**2]
 f2 = [x**2-10*x+y**2+5, x*y**2+x-10*y+8]
 f3 = [x*sin(y)-1, x**2+y**2-4]
@@ -48,9 +46,8 @@ ej2 = Ejercicio(f2, {x:0.7,y:1.0})
 ej3 = Ejercicio(f3, {x:1.0,y:2.0})
 ej4 = Ejercicio(f4, {x:1.6,y:2.6})
 ej5 = Ejercicio(f5, {x:1.0,y: 1.0, z:1.0})
-ejercicios = [ej1,ej2,ej3,ej4,ej5]
 
-for ej in ejercicios:
+for ej in [ej1,ej2,ej3,ej4,ej5]:
     ej.newton_raphson()
 
 """
