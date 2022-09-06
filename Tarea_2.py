@@ -33,7 +33,7 @@ class Ejercicio:
                     break
 
             J_inv_eval = J_inv.subs(subs_dic)
-            # ALlgoritmo Newton-Raphson. Limitado a cifras significativas dadas.
+            # Algoritmo Newton-Raphson. Limitado a cifras significativas dadas.
             x_i = (x_i - (J_inv_eval * functions_ev)).evalf(self.cifras_sig)
             # print(f"x_i: {x_i}") # En caso de necesitar ver los valores de las iteraciones, descomentar.
             iteraciones+=1
@@ -60,7 +60,6 @@ ej4_r1 = Ejercicio("Ejercicio 4 raiz 1", f4, {x:1.6,y:2.6})
 ej5_r1 = Ejercicio("Ejercicio 5 raiz 1", f5, {x:0.9,y:-0.9,z:1.9})
 ej5_r2 = Ejercicio("Ejercicio 5 raiz 2", f5, {x:-0.5,y:-0.3,z:1.1})
 
-# ej1_r1.newton_raphson()
 for ej in [ej1_r1, ej1_r2, ej2_r1, ej2_r2, ej3_r1, ej3_r2, ej3_r3, ej3_r4, ej4_r1, ej5_r1, ej5_r2]:
     ej.newton_raphson()
 
