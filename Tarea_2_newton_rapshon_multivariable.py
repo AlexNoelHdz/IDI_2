@@ -63,6 +63,8 @@ ej5_r2 = Ejercicio("Ejercicio 5 raiz 2", f5, {x:-0.5,y:-0.3,z:1.1})
 for ej in [ej1_r1, ej1_r2, ej2_r1, ej2_r2, ej3_r1, ej3_r2, ej3_r3, ej3_r4, ej4_r1, ej5_r1, ej5_r2]:
     ej.newton_raphson()
 
+
+
 """
 Respuestas:
 =====================Ejercicio 1 raiz 1=====================
