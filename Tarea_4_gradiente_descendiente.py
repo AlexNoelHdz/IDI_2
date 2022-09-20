@@ -4,16 +4,17 @@ cifras_significativas = 4
 max_iteraciones = 1000
 E = 10**-3
 
-def gradiente(funcion, v_i,alpha, variables, desc):
+def gradiente(funcion, v_i_dic ,alpha, desc):
     """Gradiente Descendente (Minimos) y Ascendente (Maximos)
 
     Args:
-        funcion:    Funcion matemática objeto del método.
-        v_i:        Vector valores iniciales de las variables.
-        alpha:      Escalar para ajuste euristico
-        variables:  Lista de variables de la función
-        desc:       True: Gradiente Descendente. False: Gradiente Ascendente.
+        funcion(sympy function):    Funcion matematica objeto del metodo.
+        v_i_dic(dic):               Diccionario con valores iniciales de las variables {Sympy Variable:Valor,...}.
+        alpha(float):               Escalar para ajuste euristico.
+        desc(Boolean):              True: Gradiente Descendente. False: Gradiente Ascendente.
     """
+    variables =  list(v_i_dic.keys())
+    v_i = Matrix(list(v_i_dic.values())).evalf(cifras_significativas)
     iteraciones = 0
     #Derivada de funcion con respecto a cada variable (by List comprehension)
     gradientes = Matrix([diff(funcion, variable) for variable in variables])
@@ -22,7 +23,7 @@ def gradiente(funcion, v_i,alpha, variables, desc):
         iteraciones += 1
         variables_dic = dict(zip(variables, v_i))
         grad_eval = gradientes.evalf(cifras_significativas, subs = variables_dic)
-        # La condición de optimalidad es que el gradiente sea 0 en todas las parciales.
+        # La condicion de optimalidad es que el gradiente sea 0 en todas las parciales.
         error_real = grad_eval.norm(1)
         if(E > error_real or iteraciones == max_iteraciones):
             return variables_dic, iteraciones, error_real
@@ -32,13 +33,11 @@ def gradiente(funcion, v_i,alpha, variables, desc):
 
 class Ejercicio:
     def __init__(self, v_i_dic, alpha, funcion, desc):
-        self.variables =  list(v_i_dic.keys())
         self.v_i_dic = v_i_dic
-        self.v_i = Matrix(list(v_i_dic.values())).evalf(cifras_significativas)
         self.funcion = funcion
         self.alpha = alpha
         self.desc = desc
-        self.resultados, self.iteraciones, self.error_acumulado = gradiente(self.funcion,self.v_i, self.alpha, self.variables,self.desc)
+        self.resultados, self.iteraciones, self.error_acumulado = gradiente(self.funcion, self.v_i_dic, self.alpha, self.desc)
 
     def imprimir_resultados(self, n_ejercicio):
         grad_tipo = "Descendente" if self.desc else "Ascendente"
