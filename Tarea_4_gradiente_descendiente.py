@@ -1,18 +1,18 @@
 from sympy import  Matrix, diff, sin
 from sympy.abc import x, y, z
 cifras_significativas = 4
-max_iteraciones = 200
+max_iteraciones = 1000
 E = 10**-3
 
 def gradiente(funcion, v_i,alpha, variables, desc):
-    """Gradiente Descendiente (Minimos) y Ascendiente (Maximos)
+    """Gradiente Descendente (Minimos) y Ascendente (Maximos)
 
     Args:
         funcion: Funcion a aplicar el metodo.
         v_i: Vector valores iniciales de las variables.
         alpha: Escalar para ajuste euristico
         variables: Lista de variables de la función
-        desc: True: Gradiente Descendiente. False: Gradiente Ascendiente.
+        desc: True: Gradiente Descendente. False: Gradiente Ascendente.
     """
     iteraciones = 0
     gradiantes = []
@@ -30,6 +30,7 @@ def gradiente(funcion, v_i,alpha, variables, desc):
         else:
             v_i = (v_i+alpha*grad_eval).evalf(cifras_significativas)
 
+        # La condición de optimalidad es que el gradiente sea 0 en todas las parciales.
         error_real = grad_eval.norm(1)
         if(E > error_real or iteraciones == max_iteraciones):
             break
@@ -45,7 +46,7 @@ class Ejercicio:
         self.funcion = funcion
         self.alpha = alpha
         self.desc = desc
-        self.grad_tipo = "Descendiente" if desc else "Ascendiente"
+        self.grad_tipo = "Descendente" if desc else "Ascendente"
         self.resultado_tipo = "Minimo" if desc else "Maximo"
         self.resultados, self.iteraciones, self.error_acumulado = gradiente(self.funcion,self.v_i, self.alpha, self.variables,self.desc)
 
@@ -67,16 +68,16 @@ f7 = 3*x**2 + 4*y**2 + z**2 - 9*x*y*z
 f8 = x**4 + y**4 + z**4 + x*y*z
 
 # Ejercicio(Numero de ejercicio, Vector inicial, Alpha, Funcion, Descendente)
-Ejercicio(1, {x:1}, 10**-2, f1, True).imprimir_resultados() # {x: 2.250}
-Ejercicio(2, {x:-6}, 10**-6, f2, True).imprimir_resultados() # {x: -7.000}
-Ejercicio(2, {x:-1}, 10**-4, f2, False).imprimir_resultados() # {x: -1.500}
-Ejercicio(2, {x:.9}, 10**-3, f2, True).imprimir_resultados() # {x: 1.000}
-Ejercicio(3, {x:13,y:6}, .5, f3, True).imprimir_resultados() # {x: 12.00, y: 5.000}
-Ejercicio(4, {x:.5, y:.5}, 0.2, f4, True).imprimir_resultados() # {x: 1.000, y: 1.000}
-Ejercicio(5, {x:1,y:1}, 0.2, f5, False).imprimir_resultados() # {x: 1.047, y: 1.047}
-Ejercicio(6, {x:.5,y:.5,z:.5}, 6**-1, f6, True).imprimir_resultados() # {x: 0.0001002, y: 0.0001002, z: 0.0001002}
-Ejercicio(7, {x:.2,y:1,z:.1}, 0.0059, f7, True).imprimir_resultados() # {x: 0.0007676, y: 0.0002572, z: 0.03263}
-Ejercicio(8, {x:-1,y:-1,z:-1}, 0.25, f8, True).imprimir_resultados() # {x: -0.2500, y: -0.2500, z: -0.2500}
-Ejercicio(8, {x:-1,y:1,z:1}, 0.25, f8, True).imprimir_resultados() # {x: -0.2500, y: 0.2500, z: 0.2500}
-Ejercicio(8, {x:1,y:-1,z:1}, 0.25, f8, True).imprimir_resultados() # {x: 0.2500, y: -0.2500, z: 0.2500}
-Ejercicio(8, {x:1,y:1,z:-1}, 0.25, f8, True).imprimir_resultados() # {x: 0.2500, y: 0.2500, z: -0.2500}
+Ejercicio(1, {x:2}, .025 , f1, True).imprimir_resultados()
+Ejercicio(2, {x:-8}, 0.00001, f2, True).imprimir_resultados()
+Ejercicio(2, {x:-1}, 10**-4, f2, False).imprimir_resultados()
+Ejercicio(2, {x:.9}, 10**-3, f2, True).imprimir_resultados()
+Ejercicio(3, {x:13,y:6}, .5, f3, True).imprimir_resultados()
+Ejercicio(4, {x:.5, y:.5}, 0.2, f4, True).imprimir_resultados()
+Ejercicio(5, {x:1,y:1}, 0.2, f5, False).imprimir_resultados()
+Ejercicio(6, {x:.5,y:.5,z:.5}, 6**-1, f6, True).imprimir_resultados()
+Ejercicio(7, {x:.1,y:.1,z:.1}, 0.0059, f7, True).imprimir_resultados()
+Ejercicio(8, {x:-1,y:-1,z:-1}, 0.25, f8, True).imprimir_resultados()
+Ejercicio(8, {x:-1,y:1,z:1}, 0.25, f8, True).imprimir_resultados()
+Ejercicio(8, {x:1,y:-1,z:1}, 0.25, f8, True).imprimir_resultados()
+Ejercicio(8, {x:1,y:1,z:-1}, 0.25, f8, True).imprimir_resultados()
