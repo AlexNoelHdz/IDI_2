@@ -1,7 +1,10 @@
-from sympy import  Matrix, diff, sin
-from sympy.abc import x, y, z
+from matplotlib import pyplot as plt
+import pandas as pd
+from sympy import  Matrix, diff, sin, symbols
+from sympy.abc import m,b
+import numpy as np
 cifras_significativas = 4
-max_iteraciones = 1000
+max_iteraciones = 21370
 E = 10**-3
 
 def gradiente(funcion, v_i_dic ,alpha, desc):
@@ -18,14 +21,20 @@ def gradiente(funcion, v_i_dic ,alpha, desc):
     iteraciones = 0
     #Derivada de funcion con respecto a cada variable (by List comprehension)
     gradientes = Matrix([diff(funcion, variable) for variable in variables])
+    e_cache = {}
 
     while True:
         variables_dic = dict(zip(variables, v_i))
         grad_eval = gradientes.evalf(cifras_significativas, subs = variables_dic)
         # La condicion de optimalidad es que el gradiente sea 0 en todas las parciales.
         error_real = grad_eval.norm(1)
+        # if(iteraciones%100==0):
+        #     print(f"{iteraciones}:{error_real}")
         if(E > error_real or iteraciones == max_iteraciones):
+            min_key = min(e_cache, key=e_cache.get)
+            print(f"{min_key}:{e_cache[min_key]}")
             return variables_dic, iteraciones, error_real
+        e_cache[iteraciones]=error_real
         iteraciones += 1
         # Algoritmo gradiente Descendiente/Ascendiente
         v_i = (v_i-alpha*grad_eval).evalf(cifras_significativas)
@@ -42,32 +51,38 @@ class Ejercicio:
         grad_tipo = "Descendente" if self.desc else "Ascendente"
         resultado_tipo = "Minimo" if self.desc else "Maximo"
         print(f'\n#===Ejercicio {n_ejercicio}: Gradiente {grad_tipo}===#')
-        print(f'{self.funcion}')
+        # print(f'{self.funcion}')
         print(f'{resultado_tipo}: {self.resultados}')
-        print(f'Vector inicial:{self.v_i_dic}')
+        print(f'Vector inicial:{self.v_i_dic}. Error Esperado {E}')
         print(f"Iteraciones: {self.iteraciones}. Alpha: {self.alpha}. Error: {self.error_acumulado}")
 
-# Funciones
-f1 = x**4 - 3*x**3 + 2
-f2 = 5*x**6 + 21*x**5 - 180*x**4 + 115*x**3 + 750*x**2 - 1260*x + 10
-f3 = x**2 - 24*x + y**2 - 10*y
-f4 = x*y + 1/x + 1/y
-f5 = sin(x) + sin(y) + sin(x+y) # 0 <= pi <= 2 pi, 0 <= y <= 2 pi
-f6 = x**2 + y**2 + z**2 + 1
-f7 = 3*x**2 + 4*y**2 + z**2 - 9*x*y*z
-f8 = x**4 + y**4 + z**4 + x*y*z
+# Ejercicio 1
+np.random.seed(0)
+xi = np.arange(1, 101)
+yi = xi + 3*np.random.uniform(0, 1)
+alpha1 = 0.000590111
+n = len(xi)
+fi = xi*m + b
+ecm1 = sum((yi-fi)**2)/(2*n)
 
 # Ejercicio(Numero de ejercicio, Vector inicial, Alpha, Funcion, Descendente)
-Ejercicio({x:2},                .025 ,      f1, True).imprimir_resultados(1)
-Ejercicio({x:-8},               0.00001,    f2, True).imprimir_resultados(2)
-Ejercicio({x:-1},               10**-4,     f2, False).imprimir_resultados(2)
-Ejercicio({x:.9},               10**-3,     f2, True).imprimir_resultados(2)
-Ejercicio({x:13,y:6},           .5,         f3, True).imprimir_resultados(3)
-Ejercicio({x:.5, y:.5},         0.2,        f4, True).imprimir_resultados(4)
-Ejercicio({x:1,y:1},            0.2,        f5, False).imprimir_resultados(5)
-Ejercicio({x:.5,y:.5,z:.5},     6**-1,      f6, True).imprimir_resultados(6)
-Ejercicio({x:.1,y:.1,z:.1},     0.0059,     f7, True).imprimir_resultados(7)
-Ejercicio({x:-1,y:-1,z:-1},     0.25,       f8, True).imprimir_resultados(8)
-Ejercicio({x:-1,y:1,z:1},       0.25,       f8, True).imprimir_resultados(8)
-Ejercicio({x:1,y:-1,z:1},       0.25,       f8, True).imprimir_resultados(8)
-Ejercicio({x:1,y:1,z:-1},       0.25,       f8, True).imprimir_resultados(8)
+e1 = Ejercicio({m:1, b:3},alpha1,ecm1, True)
+e1.imprimir_resultados(1)
+plt.plot(xi, yi, 'o')
+plt.plot(xi, e1.v_i_dic[m]*xi+e1.v_i_dic[b])
+
+# Ejercicio 2
+m1,m2,m3,b = symbols('m1,m2,m3,b')
+data = np.array(pd.read_excel('data/tareaRGD.xlsx'))
+yi = data[:,3]
+x1 =  data[:,0]
+x2 =  data[:,1]
+x3 =  data[:,2]
+ecm2 = sum((yi - x1*m1 - x2*m2 - x3*m3 - b)**2)/(2*len(data[:,1]))
+max_iteraciones = 100000
+E = 10**-5
+miu = 0.0006
+# Ejercicio(Numero de ejercicio, Vector inicial, Alpha, Funcion, Descendente)
+v_i_dic = {m1:10, m2:.0001, m3:.0001, b:.0003}
+e2 = Ejercicio(v_i_dic,miu,ecm2, True)
+e2.imprimir_resultados(2)
