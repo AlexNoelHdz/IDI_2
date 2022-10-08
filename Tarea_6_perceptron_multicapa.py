@@ -5,7 +5,15 @@ np.random.seed(666)
 
 
 class Perceptron:
-    def __init__(self, data_location, numero_entradas, numero_salidas):
+    def __init__(self, data_location, numero_entradas, numero_salidas, indicador_desconocido):
+        """Perceptrón Multicapa
+
+        Args:
+            data_location (string):         Path del archivo de excel con los datos.
+            numero_entradas (integer):      Número de entradas del modelo.
+            numero_salidas (integer):       Número de salidas del modelo.
+            indicador_desconocido (string): Caracter o cadena que indica que el dato es desconocido.
+        """
         df = np.array(read_excel(data_location))
         N = numero_entradas
         M = numero_salidas
@@ -15,7 +23,7 @@ class Perceptron:
         # df slicing df[inicio_fila:fin_fila, indice_columna]
         # N (numero_entradas) resulta ser el indice de la columna con datos desconocidos
         columna_desc = df[:,N]
-        datos_conocidos = df[columna_desc != "?"] # Se entrenará con todos los datos conocidos
+        datos_conocidos = df[columna_desc != indicador_desconocido] # Se entrenará con todos los datos conocidos
 
         # df slicing df[inicio_fila:fin_fila, inicio_columna:fin_columna]
         x = datos_conocidos[:,:N]
@@ -75,4 +83,4 @@ class Perceptron:
             for j in range(len(y_res)):
                 print(np.round(y_res[j]),' | ',salidas_originales[j])
 
-Perceptron('data/tabla_para_probar.xlsx', 4, 2)
+Perceptron('data/tabla_para_probar.xlsx', 4, 2, "?")
