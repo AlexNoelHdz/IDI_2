@@ -3,9 +3,11 @@ import numpy as np
 from math import inf
 from sklearn.metrics import accuracy_score
 from sympy import re
-np.random.seed(666)
+# np.random.seed(666)
 from functools import wraps
 import time
+MIN_ERROR = 10**-6
+MAX_EPOCAS = 100000
 
 def print_duration(func):
     @wraps(func)
@@ -14,12 +16,12 @@ def print_duration(func):
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
-        print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
+        print(f'Función {func.__name__} toma {total_time:.4f} seconds')
         return result
     return timeit_wrapper
 
 class Perceptron:
-    def __init__(self, df, numero_entradas, numero_salidas, por_test, alpha, L, red_y):
+    def __init__(self, df, numero_entradas, numero_salidas, por_test, alpha, L):
         """Perceptron
 
         Args:
@@ -29,7 +31,6 @@ class Perceptron:
             por_test(float): Porcentaje de datos de prueba
             alpha (int): Escalar Alpha.
             L (int): Numero de neuronas ocultas.
-            red_y (bool): True: Redondear a 1/0 salidas False: mostrar valor flotante.
         """
         N, M = numero_entradas, numero_salidas
 
@@ -42,7 +43,11 @@ class Perceptron:
 
         y_pred = self.test_data(datos_prueba, N, w_h, w_o)
 
-        self.print_results(E,epocas, y_pred, datos_prueba[:,N:], red_y)
+        self.print_results(E,epocas, y_pred, datos_prueba[:,N:], "Probando con Datos de prueba")
+
+        y_pred = self.test_data(datos_entrenamiento, N, w_h, w_o)
+
+        self.print_results(E,epocas, y_pred, datos_entrenamiento[:,N:], "Probando con Datos de entrenamiento")
 
     def sigmoid(self, x, a = 1):
         return 1/(1+np.e**(-a*x))
@@ -71,7 +76,7 @@ class Perceptron:
         w_o = np.random.uniform(-1, 1, (M,L))
         E = inf
         epocas = 0
-        while abs(E) >= 10**-6 and epocas < 100000:
+        while abs(E) >= MIN_ERROR and epocas < MAX_EPOCAS:
             for j in range(len(x)):
                 new_w_o, new_w_h, E = self.backward(x[j].reshape(1,N), w_h, w_o, d[j].reshape(1,M), alpha)
                 w_o = w_o + new_w_o
@@ -89,17 +94,16 @@ class Perceptron:
             y_res[j] = y.reshape(len(y),)
         return y_res
 
-    def print_results(self, error, epocas, y_pred, y_real, redondear):
+    def print_results(self, error, epocas, y_pred, y_real, nombre):
             y_pred_round = np.round(y_pred.astype(float))
             y_real = y_real.astype(float)
             accuracy = accuracy_score(y_real, y_pred_round)
-            print(f'Error: {error}, Epocas:{epocas}. Accuracy_score{accuracy}')
-            print("[y_pred]|[y_real]")
+            print(f'================{nombre}================')
+            print(f'Error: {error}, Epocas:{epocas}. Accuracy_score{round(accuracy,4)}')
+            print("[y_pred]|[y_real]:([y_pred] no redondeado)")
             n_datos = len(y_pred)
             for i in range(n_datos):
-                y_real_i = y_real[i]
-                y_pred_i = y_pred_round[i] if redondear else y_pred[i]
-                print(f"{i:0>3} {y_pred_i}    {y_real_i}")
+                print(f"{i:0>3} {y_pred_round[i]}    {y_real[i]}:({y_pred[i]})")
 
 df = np.array(read_excel('data/PercMultAplicado.xlsx'))
 np.random.shuffle(df)
@@ -112,5 +116,4 @@ Perceptron(
     numero_salidas=1,
     por_test=0.7,
     alpha=1,
-    L=3,
-    red_y=True)
+    L=3*2)
