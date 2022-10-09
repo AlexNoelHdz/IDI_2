@@ -1,11 +1,11 @@
-from pandas import read_excel
 import numpy as np
-from math import inf
-from sklearn.metrics import accuracy_score
-from sympy import re
-# np.random.seed(666)
-from functools import wraps
+import matplotlib.pyplot as plt
 import time
+from pandas import read_excel
+from math import inf
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sympy import re
+from functools import wraps
 MIN_ERROR = 10**-6
 MAX_EPOCAS = 100000
 
@@ -43,11 +43,11 @@ class Perceptron:
 
         y_pred = self.test_data(datos_prueba, N, w_h, w_o)
 
-        self.print_results(E, N,epocas, y_pred, datos_prueba, "Probando con Datos de prueba")
+        self.print_results(E, N,epocas, y_pred, datos_prueba, "Probando con Datos de prueba",0)
 
         y_pred = self.test_data(datos_entrenamiento, N, w_h, w_o)
 
-        self.print_results(E,N,epocas, y_pred, datos_entrenamiento, "Probando con Datos de entrenamiento")
+        self.print_results(E,N,epocas, y_pred, datos_entrenamiento, "Probando con Datos de entrenamiento",(n_entrenamiento-len(df)))
 
     def sigmoid(self, x, a = 1):
         return 1/(1+np.e**(-a*x))
@@ -94,17 +94,24 @@ class Perceptron:
             y_res[j] = y.reshape(len(y),)
         return y_res
 
-    def print_results(self, error, N, epocas, y_pred, data_real, nombre):
+    def print_results(self, error, N, epocas, y_pred, data_real, nombre, offset):
             y_real = data_real[:,N:]
             y_pred_round = np.round(y_pred.astype(float))
             y_real = y_real.astype(float)
+            matriz_confusion = confusion_matrix(y_real, y_pred_round)
+            precision = precision_score(y_real, y_pred_round)
+            recall = recall_score(y_real, y_pred_round)
+            f1 = f1_score(y_real, y_pred_round)
             accuracy = accuracy_score(y_real, y_pred_round)
             print(f'================{nombre}================')
-            print(f'Error: {error}, Epocas:{epocas}. Accuracy_score{round(accuracy,4)}')
-            print("[y_pred]|[y_real]")
-            n_datos = len(y_pred)
+            print("[y_pred]|[y_real]. ([y_pred_original])")
+            n_datos = len(y_pred_round)
             for i in range(n_datos):
-                print(f"{i:0>3} {y_pred_round[i]}    {y_real[i]}.Data:{data_real[i,:N]}. y_pred_original:{y_pred[i]}")
+                print(f"{i+1+offset:0>4}: {y_pred_round[i]}    {y_real[i]}. ({y_pred[i]})")
+
+            print(f'Error: {error}, Epocas:{epocas}.')
+            print(f'Accuracy: {round(accuracy,4)}. Precision: {round(precision,4)}. Recall: {round(recall,4)}. F1: {round(f1,4)} ')
+            print(f'Matriz Confusión:\n{matriz_confusion}')
 
 df = np.array(read_excel('data/PercMultAplicado.xlsx'))
 np.random.shuffle(df)
