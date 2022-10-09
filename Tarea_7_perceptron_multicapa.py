@@ -43,11 +43,11 @@ class Perceptron:
 
         y_pred = self.test_data(datos_prueba, N, w_h, w_o)
 
-        self.print_results(E,epocas, y_pred, datos_prueba[:,N:], "Probando con Datos de prueba")
+        self.print_results(E, N,epocas, y_pred, datos_prueba, "Probando con Datos de prueba")
 
         y_pred = self.test_data(datos_entrenamiento, N, w_h, w_o)
 
-        self.print_results(E,epocas, y_pred, datos_entrenamiento[:,N:], "Probando con Datos de entrenamiento")
+        self.print_results(E,N,epocas, y_pred, datos_entrenamiento, "Probando con Datos de entrenamiento")
 
     def sigmoid(self, x, a = 1):
         return 1/(1+np.e**(-a*x))
@@ -94,16 +94,17 @@ class Perceptron:
             y_res[j] = y.reshape(len(y),)
         return y_res
 
-    def print_results(self, error, epocas, y_pred, y_real, nombre):
+    def print_results(self, error, N, epocas, y_pred, data_real, nombre):
+            y_real = data_real[:,N:]
             y_pred_round = np.round(y_pred.astype(float))
             y_real = y_real.astype(float)
             accuracy = accuracy_score(y_real, y_pred_round)
             print(f'================{nombre}================')
             print(f'Error: {error}, Epocas:{epocas}. Accuracy_score{round(accuracy,4)}')
-            print("[y_pred]|[y_real]:([y_pred] no redondeado)")
+            print("[y_pred]|[y_real]")
             n_datos = len(y_pred)
             for i in range(n_datos):
-                print(f"{i:0>3} {y_pred_round[i]}    {y_real[i]}:({y_pred[i]})")
+                print(f"{i:0>3} {y_pred_round[i]}    {y_real[i]}.Data:{data_real[i,:N]}. y_pred_original:{y_pred[i]}")
 
 df = np.array(read_excel('data/PercMultAplicado.xlsx'))
 np.random.shuffle(df)
