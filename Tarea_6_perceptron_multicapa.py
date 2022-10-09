@@ -1,26 +1,23 @@
 from pandas import read_excel
 import numpy as np
 from math import inf
-
-from sympy import false
 np.random.seed(666)
 
 
 class Perceptron:
-    def __init__(self, data_location, numero_entradas, numero_salidas, indicador_desconocido, alpha):
-        """Perceptrón Multicapa
+    def __init__(self, df, numero_entradas, numero_salidas, indicador_desconocido, alpha, L):
+        """Perceptron
 
         Args:
-            data_location (string):         Path del archivo de excel con los datos.
-            numero_entradas (integer):      Número de entradas del modelo.
-            numero_salidas (integer):       Número de salidas del modelo.
-            indicador_desconocido (string): Caracter o cadena que indica que el dato es desconocido.
+            df (NdArray): Normalized DataSet [(x1,...,xn),(y1,...,yn)].
+            numero_entradas (int): Numero de entradas del modelo.
+            numero_salidas (int): Numero de salidas del modelo.
+            indicador_desconocido (str): Caracter indicador de salida desconocida.
+            alpha (int): Escalar Alpha.
+            L (int): Numero de neuronas ocultas.
         """
-        df = np.array(read_excel(data_location))
         N = numero_entradas
         M = numero_salidas
-        # Numero de neuronas ocultas
-        L = N + M
 
         # df slicing df[inicio_fila:fin_fila, indice_columna]
         # N (numero_entradas) resulta ser el indice de la columna con datos desconocidos
@@ -37,7 +34,7 @@ class Perceptron:
 
         y_res = self.test_data(df, N, w_h, w_o)
 
-        self.print_results(E,epocas, y_res, df[:,N:], false)
+        self.print_results(E,epocas, y_res, df[:,N:], True)
 
     def sigmoid(self, x, a = 1):
         return 1/(1+np.e**(-a*x))
@@ -84,4 +81,11 @@ class Perceptron:
             for j in range(len(y_res)):
                 print(f"{np.round(y_res[j]) if redondear else y_res[j]} | {salidas_originales[j]}")
 
-Perceptron('data/tabla_para_probar.xlsx', 4, 2, "?", 1)
+df = np.array(read_excel('data/tabla_para_probar.xlsx'))
+Perceptron(
+    df=df,
+    numero_entradas=4,
+    numero_salidas=2,
+    indicador_desconocido="?",
+    alpha=1,
+    L=4*2)
